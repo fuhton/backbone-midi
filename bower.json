@@ -1,0 +1,22 @@
+{
+  "name": "backbon-midi",
+  "version": "0.0.1",
+  "authors": [
+    "Nick Smith <fuhton@gmail.com>"
+  ],
+  "description": "Backbone MIDI",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "backbone": "~1.1.0",
+    "jquery": "~2.0.3",
+    "underscore": "~1.5.2"
+  }
+}
