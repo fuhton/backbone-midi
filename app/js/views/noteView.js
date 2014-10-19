@@ -1,17 +1,33 @@
 // view : noteView
+'use strict';
 
-var NoteView = Backbone.View.extend({
-   el: document,
+var $ = require('jquery')(window),
+    Backbone = require('backbone');
 
-   events: {
-      "keydown": "logKey",
-      'keyup': 'logKey',
-      'keypress': 'logKey'
-   },
+module.exports = Backbone.View.extend({
+    el: document,
 
-   logKey: function(e) {
-      console.log(e.type, e.keyCode);
-   }
+    currentKeys: [],
+
+    events: {
+        "keydown": "logKeyDown",
+        'keyup': 'logKeyUp',
+    },
+
+    logKeyDown: function(e) {
+        var code = e.keyCode;
+        if ( this.currentKeys.indexOf( code ) === -1 ) {
+            this.currentKeys.push(code);
+            BackboneEvents.trigger( "note:down", this );
+            console.log(e.type, e.keyCode);
+        }
+    },
+    logKeyUp: function(e) {
+        var code = e.keyCode;
+        if ( this.currentKeys.indexOf( code ) !== -1 ) {
+            this.currentKeys.splice( this.currentKeys.indexOf( code ), 1 );
+        }
+        console.log(e.type, e.keyCode);
+        BackboneEvents.trigger( "note:up", this );
+    }
 });
-
-var note_view = new NoteView();

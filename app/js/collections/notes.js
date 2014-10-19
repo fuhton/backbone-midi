@@ -1,5 +1,12 @@
 // collection : notes
+'use strict';
 
-var Notes = Backbone.Collection.extend({
-	model: Note
-})
+var $ = require('jquery')(window),
+    Backbone = require('backbone'),
+    Note = require( '../models/note.js' );
+
+module.exports = Backbone.Collection.extend({
+
+    model: Note,
+
+});
