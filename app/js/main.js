@@ -1,6 +1,7 @@
 'use strict';
 
 var $ = require('jquery')(window),
+    _ = require('underscore'),
     Backbone = require('backbone'),
     Note = require( './models/note.js' ),
     Notes = require( './collections/notes.js' ),
@@ -23,18 +24,27 @@ function MIDIMessageEventHandler(event) {
         if (event.data[2]!==0) {
             if ( activeNotes.indexOf( code ) === -1 ) {
                 var note = new Note({
-                    timeStamp: event.timeStamp,
+                    timeOn:    event.timeStamp,
                     type:      event.data[0],
                     key:       event.data[1],
                     pressure:  event.data[2],
+                    live:      true,
                 });
                 notesCollection.add( note );
                 activeNotes.push( code );
-                console.log(notesCollection);
             }
             return;
         }
     case 0x80:
+        var offNote = notesCollection.filter( function(thing) {
+              if ( thing.get("key") === event.data[1] && thing.get("live") === true ) {
+                  thing.set("live", false );
+                  thing.set("timeOff", event.timeStamp );
+                  return thing;
+              }
+        });
+        //offNote.forEach( function() { console.log(this) });
+        console.log(_.last(offNote));
         // note off event
         if ( activeNotes.indexOf( code ) !== -1 ) {
             activeNotes.splice( activeNotes.indexOf( code ), 1 );
