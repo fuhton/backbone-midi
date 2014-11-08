@@ -1,0 +1,29 @@
+<!-- partial : input -->
+
+<form id="auth-form" class="form auth-form">
+
+	<label for="app_key">App Key</label>
+	<input type="text" placeholder="App Key" name="app_key" required id="app_key" />
+
+	<label for="app_sec">App Secret</label>
+	<input type="text" placeholder="App Secret" name="app_sec" required id="app_sec" />
+
+	<label for="app_time">Time Signature</label>
+	<select name="app_time" id="app_time">
+		<option selected value="4/4">4/4</option>
+		<option value="3/4">3/4</option>
+		<option value="6/8">6/8</option>
+	</select>
+
+	<label for="app_note">Base Note Value</label>
+	<select name="app_note" id="app_note">
+		<option value="1">Whole</option>
+		<option value=".5">Half</option>
+		<option selected value=".25">Quater</option>
+		<option value=".125">Eighth</option>
+		<option value=".0625">Sixteenth</option>
+		<option value=".03125">Thirty-Second</option>
+	</select>
+
+	<button class="btn btn-submit">Submit</button>
+</form>
