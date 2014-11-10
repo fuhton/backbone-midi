@@ -6,7 +6,7 @@ var Backbone = require('backbone');
 var $ = require('jquery');
 
 window.jQuery = $;
-window.app_id = '';
+window.app_midi = {};
 
 Backbone.$ = window.jQuery;
 
@@ -79,6 +79,7 @@ module.exports = function midiDevice(midi) {
 // midi : event
 'use strict';
 
+var _ = require('underscore');
 var Note = require( '../models/note.js' );
 var Notes = require( '../collections/notes.js' );
 
@@ -86,34 +87,22 @@ var notesCollection = new Notes();
 
 module.exports = function midiEvent(event) {
 
-	var code = event.data[1];
+	var midi_event = event;
 	// Switch to hide lower level midi events. Target what we need.
 	switch (event.data[0] & 0xf0) {
 	case 0x90:
 		// note down event
-		if (event.data[2]!==0) {
-			if ( app_activeNotes.indexOf( code ) === -1 ) {
-				var note = new Note();
-				note.save();
-				notesCollection.add( note );
-				app_activeNotes.push( code );
+		var note = new Note({
+			_id: window.app_midi.app_id,
+			note: {
+				note: midi_event,
 			}
-			return;
-		}
+		}, { patch: true });
+		note.save();
+
+		return;
 	case 0x80:
-		var offNote = notesCollection.filter( function(obj) {
-			  if ( obj.get("key") === event.data[1] && obj.get("live") === true ) {
-				  obj.set("live", false );
-				  obj.set("timeOff", event.timeStamp );
-				  return obj;
-			  }
-		});
-		//offNote.forEach( function() { console.log(this) });
-		console.log( _.last( offNote ) );
-		// note off event
-		if ( app_activeNotes.indexOf( code ) !== -1 ) {
-			app_activeNotes.splice( app_activeNotes.indexOf( code ), 1 );
-		}
+		// note up event
 		return;
 	case 0xB0:
 		// pedal event
@@ -121,7 +110,7 @@ module.exports = function midiEvent(event) {
 	}
 }
 
-},{"../collections/notes.js":2,"../models/note.js":7}],5:[function(require,module,exports){
+},{"../collections/notes.js":2,"../models/note.js":7,"underscore":13}],5:[function(require,module,exports){
 // midi : init
 'use strict';
 
@@ -165,6 +154,8 @@ var Notes = require( '../collections/notes.js');
 
 module.exports = Backbone.Model.extend({
 
+	idAttribute: '_id',
+
 	urlRoot: 'http://api.thatsmymidi.com/instances',
 
 	defaults: {
@@ -173,6 +164,17 @@ module.exports = Backbone.Model.extend({
 	initialize: function () {
 		this.notes = new Notes();
 		this.notes.parent = this;
+	},
+
+	sync: function( method, collection, options ) {
+		options.beforeSend = function( xhr ) {
+			var user = window.app_midi.app_key;
+			var pass = window.app_midi.app_sec;
+			var token = user.concat(':', pass);
+			xhr.setRequestHeader('Authorization', ('Basic '.concat(btoa(token))));
+		};
+
+		return Backbone.sync.apply(this, arguments);
 	},
 
 });
@@ -208,7 +210,8 @@ module.exports = Backbone.View.extend({
 	},
 
 	render: function( options ) {
-		window.app_id = options._id;
+		window.app_midi.app_id = options._id;
+		this.model.set('_id', window.app_midi.app_id);
 		this.$el.html( this.outputTemplate( options ) );
 	},
 
@@ -220,27 +223,21 @@ module.exports = Backbone.View.extend({
 		var self = this, form = jQuery("#auth-form");
 		e.preventDefault();
 
-		self.app_key = form.find( '#app_key' ).val();
-		self.app_sec = form.find( '#app_sec' ).val();
-		self.app_time = form.find( '#app_time' ).val();
-		self.app_note = form.find( '#app_note' ).val();
+		window.app_midi.app_key = form.find( '#app_key' ).val();
+		window.app_midi.app_sec = form.find( '#app_sec' ).val();
+		window.app_midi.app_time = form.find( '#app_time' ).val();
+		window.app_midi.app_note = form.find( '#app_note' ).val();
 
-		if ( self.app_key && self.app_sec && self.app_time && self.app_note ) {
+		if ( window.app_midi.app_key && window.app_midi.app_sec && window.app_midi.app_time && window.app_midi.app_note ) {
 			//Save the model and get response
 			self.model.save(
 				{
 					meta: {
-						time: self.app_time,
-						note: self.app_note,
+						time: window.app_midi.app_time,
+						note: window.app_midi.app_note,
 					}
 				},
 				{
-					beforeSend: function( xhr ) {
-						var user = self.app_key;
-						var pass = self.app_sec;
-						var token = user.concat(':', pass);
-						xhr.setRequestHeader('Authorization', ('Basic '.concat(btoa(token))));
-					},
 					success: function (model, response) {
 						self.render( response );
 					},
@@ -257,7 +254,7 @@ module.exports = Backbone.View.extend({
 });
 
 },{"../../partials/input.html":9,"../../partials/output.html":10,"../models/note.js":7,"backbone":11,"jquery":12,"underscore":13}],9:[function(require,module,exports){
-module.exports = "<!-- partial : input -->\n\n<form id=\"auth-form\" class=\"form auth-form\">\n\n\t<label for=\"app_key\">App Key</label>\n\t<input type=\"text\" placeholder=\"App Key\" name=\"app_key\" required id=\"app_key\" />\n\n\t<label for=\"app_sec\">App Secret</label>\n\t<input type=\"text\" placeholder=\"App Secret\" name=\"app_sec\" required id=\"app_sec\" />\n\n\t<label for=\"app_time\">Time Signature</label>\n\t<select name=\"app_time\" id=\"app_time\">\n\t\t<option selected value=\"4/4\">4/4</option>\n\t\t<option value=\"3/4\">3/4</option>\n\t\t<option value=\"6/8\">6/8</option>\n\t</select>\n\n\t<label for=\"app_note\">Base Note Value</label>\n\t<select name=\"app_note\" id=\"app_note\">\n\t\t<option value=\"1\">Whole</option>\n\t\t<option value=\".5\">Half</option>\n\t\t<option selected value=\".25\">Quater</option>\n\t\t<option value=\".125\">Eighth</option>\n\t\t<option value=\".0625\">Sixteenth</option>\n\t\t<option value=\".03125\">Thirty-Second</option>\n\t</select>\n\n\t<button class=\"btn btn-submit\">Submit</button>\n</form>\n";
+module.exports = "<!-- partial : input -->\n\n<form id=\"auth-form\" class=\"form auth-form\">\n\n\t<label for=\"app_key\">App Key</label>\n\t<input type=\"text\" placeholder=\"App Key\" name=\"app_key\" required id=\"app_key\" value=\"VZpZZdY4wThXNwNCkCEXRK\"/>\n\n\t<label for=\"app_sec\">App Secret</label>\n\t<input type=\"text\" placeholder=\"App Secret\" name=\"app_sec\" required id=\"app_sec\" value=\"BSw632Nqf9GMucMRuVpH3x\"/>\n\n\t<label for=\"app_time\">Time Signature</label>\n\t<select name=\"app_time\" id=\"app_time\">\n\t\t<option selected value=\"4/4\">4/4</option>\n\t\t<option value=\"3/4\">3/4</option>\n\t\t<option value=\"6/8\">6/8</option>\n\t</select>\n\n\t<label for=\"app_note\">Base Note Value</label>\n\t<select name=\"app_note\" id=\"app_note\">\n\t\t<option value=\"1\">Whole</option>\n\t\t<option value=\".5\">Half</option>\n\t\t<option selected value=\".25\">Quater</option>\n\t\t<option value=\".125\">Eighth</option>\n\t\t<option value=\".0625\">Sixteenth</option>\n\t\t<option value=\".03125\">Thirty-Second</option>\n\t</select>\n\n\t<button class=\"btn btn-submit\">Submit</button>\n</form>\n";
 
 },{}],10:[function(require,module,exports){
 module.exports = "<!-- partial : output -->\n\n<div id=\"app_id\" class=\"success\">ID: <%= _id %></div>\n";

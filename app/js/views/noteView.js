@@ -28,7 +28,8 @@ module.exports = Backbone.View.extend({
 	},
 
 	render: function( options ) {
-		window.app_id = options._id;
+		window.app_midi.app_id = options._id;
+		this.model.set('_id', window.app_midi.app_id);
 		this.$el.html( this.outputTemplate( options ) );
 	},
 
@@ -40,27 +41,21 @@ module.exports = Backbone.View.extend({
 		var self = this, form = jQuery("#auth-form");
 		e.preventDefault();
 
-		self.app_key = form.find( '#app_key' ).val();
-		self.app_sec = form.find( '#app_sec' ).val();
-		self.app_time = form.find( '#app_time' ).val();
-		self.app_note = form.find( '#app_note' ).val();
+		window.app_midi.app_key = form.find( '#app_key' ).val();
+		window.app_midi.app_sec = form.find( '#app_sec' ).val();
+		window.app_midi.app_time = form.find( '#app_time' ).val();
+		window.app_midi.app_note = form.find( '#app_note' ).val();
 
-		if ( self.app_key && self.app_sec && self.app_time && self.app_note ) {
+		if ( window.app_midi.app_key && window.app_midi.app_sec && window.app_midi.app_time && window.app_midi.app_note ) {
 			//Save the model and get response
 			self.model.save(
 				{
 					meta: {
-						time: self.app_time,
-						note: self.app_note,
+						time: window.app_midi.app_time,
+						note: window.app_midi.app_note,
 					}
 				},
 				{
-					beforeSend: function( xhr ) {
-						var user = self.app_key;
-						var pass = self.app_sec;
-						var token = user.concat(':', pass);
-						xhr.setRequestHeader('Authorization', ('Basic '.concat(btoa(token))));
-					},
 					success: function (model, response) {
 						self.render( response );
 					},

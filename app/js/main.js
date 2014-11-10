@@ -5,7 +5,7 @@ var Backbone = require('backbone');
 var $ = require('jquery');
 
 window.jQuery = $;
-window.app_id = '';
+window.app_midi = {};
 
 Backbone.$ = window.jQuery;
 
