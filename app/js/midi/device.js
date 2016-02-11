@@ -1,15 +1,13 @@
 // midi : device
-'use strict';
 
 var $ = require('jquery');
 var midiEvent = require('./event');
 
-module.exports = function midiDevice(midi) {
+module.exports = function midiDevice( app_midiAccess ) {
 
-	app_midiAccess = midi;
-
-	if ((typeof(app_midiAccess.inputs) === 'function')) {
+	if ( 'function' === typeof app_midiAccess.inputs ) {
 		var inputs=app_midiAccess.inputs();
+
 		if (inputs.length === 0) {
 			$('#main').remove('.error');
 			$('#main').append('<div class="error">No MIDI support present in your browser. Function Reference: device.1</div>');

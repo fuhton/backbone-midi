@@ -1,0 +1,193 @@
+[
+	{
+		"_id": "5470c41e357eb7267d000055",
+		"meta": {
+			"time": "4/4",
+			"note": ".25"
+		},
+		"notes": [
+			{
+				"note": {
+					"note": {
+						"data": {
+							"0": 144,
+							"1": 55,
+							"2": 0
+						},
+						"receivedTime": 11235.47440999937,
+						"path": {
+							"length": 0
+						},
+						"cancelBubble": false,
+						"returnValue": true,
+						"srcElement": {
+							"ondisconnect": null,
+							"version": "",
+							"type": "input",
+							"name": "USB Uno MIDI Interface",
+							"manufacturer": "M-Audio",
+							"id": "1736114964"
+						},
+						"defaultPrevented": false,
+						"timeStamp": 1416676353711,
+						"cancelable": false,
+						"bubbles": true,
+						"eventPhase": 2,
+						"currentTarget": {
+							"ondisconnect": null,
+							"version": "",
+							"type": "input",
+							"name": "USB Uno MIDI Interface",
+							"manufacturer": "M-Audio",
+							"id": "1736114964"
+						},
+						"target": {
+							"ondisconnect": null,
+							"version": "",
+							"type": "input",
+							"name": "USB Uno MIDI Interface",
+							"manufacturer": "M-Audio",
+							"id": "1736114964"
+						},
+						"type": "midimessage"
+					}
+				},
+				"note": {
+					"note": {
+						"data": {
+							"0": 144,
+							"1": 55,
+							"2": 0
+						},
+						"receivedTime": 11235.47440999937,
+						"path": {
+							"length": 0
+						},
+						"cancelBubble": false,
+						"returnValue": true,
+						"srcElement": {
+							"ondisconnect": null,
+							"version": "",
+							"type": "input",
+							"name": "USB Uno MIDI Interface",
+							"manufacturer": "M-Audio",
+							"id": "1736114964"
+						},
+						"defaultPrevented": false,
+						"timeStamp": 1416676353711,
+						"cancelable": false,
+						"bubbles": true,
+						"eventPhase": 2,
+						"currentTarget": {
+							"ondisconnect": null,
+							"version": "",
+							"type": "input",
+							"name": "USB Uno MIDI Interface",
+							"manufacturer": "M-Audio",
+							"id": "1736114964"
+						},
+						"target": {
+							"ondisconnect": null,
+							"version": "",
+							"type": "input",
+							"name": "USB Uno MIDI Interface",
+							"manufacturer": "M-Audio",
+							"id": "1736114964"
+						},
+						"type": "midimessage"
+					}
+				},
+				"note": {
+					"note": {
+						"data": {
+							"0": 144,
+							"1": 43,
+							"2": 0
+						},
+						"receivedTime": 142804.647424,
+						"path": {
+							"length": 0
+						},
+						"cancelBubble": false,
+						"returnValue": true,
+						"srcElement": {
+							"ondisconnect": null,
+							"version": "",
+							"type": "input",
+							"name": "USB Uno MIDI Interface",
+							"manufacturer": "M-Audio",
+							"id": "1736114964"
+						},
+						"defaultPrevented": false,
+						"timeStamp": 1416676524141,
+						"cancelable": false,
+						"bubbles": true,
+						"eventPhase": 2,
+						"currentTarget": {
+							"ondisconnect": null,
+							"version": "",
+							"type": "input",
+							"name": "USB Uno MIDI Interface",
+							"manufacturer": "M-Audio",
+							"id": "1736114964"
+						},
+						"target": {
+							"ondisconnect": null,
+							"version": "",
+							"type": "input",
+							"name": "USB Uno MIDI Interface",
+							"manufacturer": "M-Audio",
+							"id": "1736114964"
+						},
+						"type": "midimessage"
+					}
+				},
+				"note": {
+					"note": {
+						"data": {
+							"0": 144,
+							"1": 79,
+							"2": 0
+						},
+						"receivedTime": 158345.40270099934,
+						"path": {
+							"length": 0
+						},
+						"cancelBubble": false,
+						"returnValue": true,
+						"srcElement": {
+							"ondisconnect": null,
+							"version": "",
+							"type": "input",
+							"name": "USB Uno MIDI Interface",
+							"manufacturer": "M-Audio",
+							"id": "1736114964"
+						},
+						"defaultPrevented": false,
+						"timeStamp": 1416676539682,
+						"cancelable": false,
+						"bubbles": true,
+						"eventPhase": 2,
+						"currentTarget": {
+							"ondisconnect": null,
+							"version": "",
+							"type": "input",
+							"name": "USB Uno MIDI Interface",
+							"manufacturer": "M-Audio",
+							"id": "1736114964"
+						},
+						"target": {
+							"ondisconnect": null,
+							"version": "",
+							"type": "input",
+							"name": "USB Uno MIDI Interface",
+							"manufacturer": "M-Audio",
+							"id": "1736114964"
+						},
+						"type": "midimessage"
+					}
+				}
+			}
+		]
+	}
+]

@@ -4,10 +4,9 @@ jshint     = require('gulp-jshint'),
 rename     = require('gulp-rename');
 browserify = require('browserify'),
 stringify  = require('stringify'),
+strictify  = require('strictify'),
 source     = require('vinyl-source-stream'),
 fs         = require('fs');
-
-
 
 
 gulp.task( 'connect', function() {
@@ -45,6 +44,7 @@ gulp.task( 'hint', function() {
 gulp.task( 'browserify', function() {
 	var b = browserify();
 	b.transform(stringify(['.html']));
+	b.transform(strictify);
 	b.add('./app/js/main.js');
 
 	return b.bundle()

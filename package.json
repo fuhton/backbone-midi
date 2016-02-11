@@ -31,6 +31,7 @@
     "install": "^0.1.7",
     "jquery": "^2.1.1",
     "npm": "^2.1.6",
+    "strictify": "^0.2.0",
     "stringify": "^3.0.0",
     "underscore": "^1.7.0",
     "vinyl-source-stream": "^1.0.0"
