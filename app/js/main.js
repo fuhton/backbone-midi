@@ -1,20 +1,18 @@
-// : main
-'use strict';
+import React from 'react'
 
-var Backbone = require('backbone');
-var $ = require('jquery');
-
-window.jQuery = $;
-window.app_midi = {};
-
-Backbone.$ = window.jQuery;
-
-var MidiApp = require('./midi/init');
-var NoteView = require( './views/noteView' );
-
-$( document ).ready( function() {
-
-	var notesView = new NoteView();
-	var midiApp = new MidiApp();
-
-});
+class App extends React.Component {
+	constructor () {
+		super()
+		this.state = { n: 0 }
+	}
+	render () {
+		return <div>
+		<h1>clicked {this.state.n} timess</h1>
+		<button onClick={this.handleClick.bind(this)}>click me!</button>
+		</div>
+	}
+	handleClick () {
+		this.setState({ n: this.state.n + 1 })
+	}
+}
+React.render(<App />, document.querySelector('#main'))
