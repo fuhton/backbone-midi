@@ -1,19 +1,9 @@
 // : main
 
-var Backbone = require('backbone');
-var $ = require('jquery');
+var route  = require( './routers/base.js' );
 
-window.jQuery = $;
-window.app_midi = {};
+var mainEl =  document.getElementById( 'main' );
 
-Backbone.$ = window.jQuery;
-
-var MidiApp = require('./midi/init');
-var NoteView = require( './views/noteView' );
-
-$( document ).ready( function() {
-
-	var notesView = new NoteView();
-	var midiApp = new MidiApp();
-
-});
+if ( mainEl ) {
+	var router = new route();
+}

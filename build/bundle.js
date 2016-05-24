@@ -1,266 +1,53 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-"use strict";
 // : main
 
-var Backbone = require('backbone');
-var $ = require('jquery');
+var route  = require( './routers/base.js' );
 
-window.jQuery = $;
-window.app_midi = {};
+var mainEl =  document.getElementById( 'main' );
 
-Backbone.$ = window.jQuery;
-
-var MidiApp = require('./midi/init');
-var NoteView = require( './views/noteView' );
-
-$( document ).ready( function() {
-
-	var notesView = new NoteView();
-	var midiApp = new MidiApp();
-
-});
-
-},{"./midi/init":5,"./views/noteView":8,"backbone":11,"jquery":12}],2:[function(require,module,exports){
-"use strict";
-// collection : notes
-
-var Backbone = require('backbone');
-var Note = require( '../models/note.js' );
-
-module.exports = Backbone.Collection.extend({
-
-	model: Note,
-
-	url: 'http://api.thatsmymidi.com/instances',
-
-});
-
-},{"../models/note.js":7,"backbone":11}],3:[function(require,module,exports){
-"use strict";
-// midi : device
-
-var $ = require('jquery');
-var midiEvent = require('./event');
-
-module.exports = function midiDevice( app_midiAccess ) {
-
-	if ( 'function' === typeof app_midiAccess.inputs ) {
-		var inputs=app_midiAccess.inputs();
-
-		if (inputs.length === 0) {
-			$('#main').remove('.error');
-			$('#main').append('<div class="error">No MIDI support present in your browser. Function Reference: device.1</div>');
-		} else {
-			for (var i=0;i<inputs.length;i++) {
-				inputs[i].onmidimessage = midiEvent;
-			}
-		}
-
-	} else {
-
-		// new MIDIMap not present in Chrome 38.0.2125.101
-		var haveAtLeastOneDevice=false;
-		var inputs=app_midiAccess.inputs.values();
-		for ( var input = inputs.next(); input && !input.done; input = inputs.next()) {
-			input.value.onmidimessage = midiEvent;
-			haveAtLeastOneDevice = true;
-		}
-		if (!haveAtLeastOneDevice) {
-			$('#main').remove('.error');
-			$('#main').append('<div class="error">No MIDI support present in your browser. Function Reference: device.2</div>');
-		}
-	}
-
+if ( mainEl ) {
+	var router = new route();
 }
 
-},{"./event":4,"jquery":12}],4:[function(require,module,exports){
-"use strict";
-// midi : event
-'use strict';
+},{"./routers/base.js":2}],2:[function(require,module,exports){
+/**
+ * Event Routing module
+ */
 
-var _ = require('underscore');
-var Note = require( '../models/note.js' );
-var Notes = require( '../collections/notes.js' );
+var Backbone = require( 'backbone' );
+var _        = require( 'underscore' );
+var jQuery   = require( 'jquery' );
 
-var notesCollection = new Notes();
+module.exports = Backbone.Router.extend({
 
-module.exports = function midiEvent(event) {
+	initialize : function( options ) {
+		_.extend( this, options );
+		var self = this;
+		Backbone.history.start();
 
-	var midi_event = event;
-	// Switch to hide lower level midi events. Target what we need.
-	switch (event.data[0] & 0xf0) {
-	case 0x90:
-		// note down event
-		var note = new Note({
-			_id: window.app_midi.app_id,
-			note: {
-				note: midi_event,
-			}
-		}, { patch: true });
-		note.save();
-
-		return;
-	case 0x80:
-		// note up event
-		return;
-	case 0xB0:
-		// pedal event
-		return;
-	}
-}
-
-},{"../collections/notes.js":2,"../models/note.js":7,"underscore":13}],5:[function(require,module,exports){
-"use strict";
-// midi : init
-'use strict';
-
-var $ = require('jquery');
-var device = require('./device');
-var reject = require('./reject');
-
-window.app_context=null;
-window.app_midiAccess=null;
-window.app_activeNotes = []; // the stack of actively-pressed keys
-
-module.exports = function midiInit() {
-
-	window.AudioContext=window.AudioContext||window.webkitAudioContext;
-
-	app_context = new AudioContext();
-
-	if (navigator.requestMIDIAccess) {
-		navigator.requestMIDIAccess().then( device, reject );
-	} else {
-		$('#main').append('<div class="error">No MIDI support present in your browser. Function Reference: init</div>');
-	}
-}
-
-},{"./device":3,"./reject":6,"jquery":12}],6:[function(require,module,exports){
-"use strict";
-// midi : reject
-'use strict';
-
-module.exports = function midiReject(err) {
-	console.log(err);
-	console.log('The MIDI system failed to start. Function Reference: reject');
-}
-
-},{}],7:[function(require,module,exports){
-"use strict";
-// model : note
-
-var Backbone = require('backbone');
-var Notes = require( '../collections/notes.js');
-
-module.exports = Backbone.Model.extend({
-
-	idAttribute: '_id',
-
-	urlRoot: 'http://api.thatsmymidi.com/instances',
-
-	defaults: {},
-
-	initialize: function () {
-		this.notes = new Notes();
-		this.notes.parent = this;
 	},
 
-	sync: function( method, collection, options ) {
-		options.beforeSend = function( xhr ) {
-			var user = window.app_midi.app_key;
-			var pass = window.app_midi.app_sec;
-			var token = user.concat(':', pass);
-			xhr.setRequestHeader('Authorization', ('Basic '.concat(btoa(token))));
-		};
+	routes: {
+		'signin'   : 'signin',
+		'*actions' : 'defaultRoute',
+	},
 
-		return Backbone.sync.apply(this, arguments);
+	signin : function() {
+		console.log( 'SIGNIN' );
+	},
+
+	defaultRoute : function() {
+		console.log('ROUTING');
+		return this;
+	},
+
+	navigate : function( path ) {
+		return Backbone.history.navigate( path, true );
 	},
 
 });
 
-},{"../collections/notes.js":2,"backbone":11}],8:[function(require,module,exports){
-"use strict";
-// view : noteView
-
-var _ = require('underscore');
-var Backbone = require('backbone');
-var $ = require('jquery');
-var inputTemplate = require('../../partials/input.html');
-var outputTemplate = require('../../partials/output.html');
-
-Backbone.$ = window.jQuery;
-
-var Note = require( '../models/note.js' );
-
-module.exports = Backbone.View.extend({
-
-	inputTemplate: _.template( inputTemplate ),
-	outputTemplate: _.template( outputTemplate ),
-
-	el: '#main',
-
-	events: {
-		'submit #auth-form': 'submit'
-	},
-
-	initialize: function() {
-		this.renderForm();
-		this.model = new Note();
-	},
-
-	render: function( options ) {
-		window.app_midi.app_id = options._id;
-		this.model.set('_id', window.app_midi.app_id);
-		this.$el.html( this.outputTemplate( options ) );
-	},
-
-	renderForm: function() {
-		this.$el.html( this.inputTemplate() );
-	},
-
-	submit: function(e) {
-		var self = this, form = jQuery("#auth-form");
-		e.preventDefault();
-
-		window.app_midi.app_key = form.find( '#app_key' ).val();
-		window.app_midi.app_sec = form.find( '#app_sec' ).val();
-		window.app_midi.app_time = form.find( '#app_time' ).val();
-		window.app_midi.app_note = form.find( '#app_note' ).val();
-
-		if ( window.app_midi.app_key && window.app_midi.app_sec && window.app_midi.app_time && window.app_midi.app_note ) {
-			//Save the model and get response
-			self.model.save(
-				{
-					meta: {
-						time: window.app_midi.app_time,
-						note: window.app_midi.app_note,
-					}
-				},
-				{
-					success: function (model, response) {
-						self.render( response );
-					},
-					error: function (model, response) {
-						self.$el.append("<div class='error'>" + response.responseText + "</div>");
-					}
-				}
-			);
-		}
-
-	},
-
-
-});
-
-},{"../../partials/input.html":9,"../../partials/output.html":10,"../models/note.js":7,"backbone":11,"jquery":12,"underscore":13}],9:[function(require,module,exports){
-"use strict";
-module.exports = "<!-- partial : input -->\n\n<form id=\"auth-form\" class=\"form auth-form\">\n\n\t<label for=\"app_key\">App Key</label>\n\t<input type=\"text\" placeholder=\"App Key\" name=\"app_key\" required id=\"app_key\" value=\"VZpZZdY4wThXNwNCkCEXRK\" />\n\n\t<label for=\"app_sec\">App Secret</label>\n\t<input type=\"text\" placeholder=\"App Secret\" name=\"app_sec\" required id=\"app_sec\" value=\"BSw632Nqf9GMucMRuVpH3x\"/>\n\n\t<label for=\"app_time\">Time Signature</label>\n\t<select name=\"app_time\" id=\"app_time\">\n\t\t<option selected value=\"4/4\">4/4</option>\n\t\t<option value=\"3/4\">3/4</option>\n\t\t<option value=\"6/8\">6/8</option>\n\t</select>\n\n\t<label for=\"app_note\">Base Note Value</label>\n\t<select name=\"app_note\" id=\"app_note\">\n\t\t<option value=\"1\">Whole</option>\n\t\t<option value=\".5\">Half</option>\n\t\t<option selected value=\".25\">Quater</option>\n\t\t<option value=\".125\">Eighth</option>\n\t\t<option value=\".0625\">Sixteenth</option>\n\t\t<option value=\".03125\">Thirty-Second</option>\n\t</select>\n\n\t<button class=\"btn btn-submit\">Submit</button>\n</form>\n";
-
-},{}],10:[function(require,module,exports){
-"use strict";
-module.exports = "<!-- partial : output -->\n\n<div id=\"app_id\" class=\"success\">ID: <%= _id %></div>\n";
-
-},{}],11:[function(require,module,exports){
+},{"backbone":3,"jquery":4,"underscore":5}],3:[function(require,module,exports){
 (function (global){
 //     Backbone.js 1.2.3
 
@@ -2158,7 +1945,7 @@ module.exports = "<!-- partial : output -->\n\n<div id=\"app_id\" class=\"succes
 }));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"jquery":12,"underscore":13}],12:[function(require,module,exports){
+},{"jquery":4,"underscore":5}],4:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.2.0
  * http://jquery.com/
@@ -11991,7 +11778,7 @@ if ( !noGlobal ) {
 return jQuery;
 }));
 
-},{}],13:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 //     Underscore.js 1.8.3
 //     http://underscorejs.org
 //     (c) 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors

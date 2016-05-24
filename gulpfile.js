@@ -18,10 +18,7 @@ gulp.task( 'watch', function () {
 	gulp.watch(
 		[
 		'./app/js/main.js',
-		'./app/js/models/*.js',
-		'./app/js/collections/*.js',
-		'./app/js/views/*.js',
-		'./app/js/midi/*.js',
+		'./app/js/*/*.js',
 		'./app/partials/*.html'
 		],
 		[ 'hint', 'browserify']
@@ -44,7 +41,6 @@ gulp.task( 'hint', function() {
 gulp.task( 'browserify', function() {
 	var b = browserify();
 	b.transform(stringify(['.html']));
-	b.transform(strictify);
 	b.add('./app/js/main.js');
 
 	return b.bundle()
